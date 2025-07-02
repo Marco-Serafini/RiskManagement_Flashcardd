@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RMP Flashcard App | Marco Serafini</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <!-- Login Screen -->
+  <section id="login-screen" class="screen active">
+    <div class="container">
+      <div class="login-container">
+        <div class="login-header">
+          <h1>RMP Flashcard App</h1>
+          <p>Sistema di studio con ripetizione spaziata per la certificazione RMP</p>
+        </div>
+        <div class="card login-card">
+          <div class="card__body">
+            <form id="login-form">
+              <div class="form-group">
+                <label for="user-select" class="form-label">Seleziona profilo</label>
+                <select id="user-select" class="form-control">
+                  <option value="" disabled selected>Seleziona utente...</option>
+                  <option value="marco">Marco (Studente)</option>
+                  <option value="massimo">Massimo (Studente)</option>
+                  <option value="valentina">Valentina (Studente)</option>
+                  <option value="luca">Luca (Studente)</option>
+                  <option value="admin">Admin (Amministratore)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="access-code" class="form-label">Codice di accesso</label>
+                <input type="password" id="access-code" class="form-control" placeholder="Inserisci il codice di accesso">
+              </div>
+              <div id="login-error" class="error-message hidden"></div>
+              <button type="submit" class="btn btn--primary btn--full-width">Accedi</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <footer class="app-footer">
+      <p>App creata da Marco Serafini | <a href="https://www.marcoserafini.xyz" target="_blank">marcoserafini.xyz</a></p>
+    </footer>
+  </section>
+
+  <!-- Student Dashboard -->
+  <section id="student-dashboard" class="screen">
+    <div class="dashboard-container">
+      <header class="app-header">
+        <div class="user-info">
+          <i class="fas fa-user-circle"></i>
+          <span id="user-welcome">Benvenuto, </span>
+        </div>
+        <div class="header-actions">
+          <button id="toggle-theme-btn" class="btn btn--secondary btn--sm">
+            <i class="fas fa-moon"></i>
+          </button>
+          <button id="logout-btn" class="btn btn--outline btn--sm">
+            <i class="fas fa-sign-out-alt"></i> Logout
+          </button>
+        </div>
+      </header>
+
+      <div class="dashboard-content">
+        <h2>Dashboard Personale</h2>
+        <div class="dashboard-summary">
+          <div class="summary-card">
+            <h3>Riepilogo Progresso</h3>
+            <div class="progress-stats">
+              <div class="stat-item">
+                <span class="stat-label">Flashcard totali:</span>
+                <span id="total-cards" class="stat-value">0</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Flashcard studiate:</span>
+                <span id="studied-cards" class="stat-value">0</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">In apprendimento:</span>
+                <span id="learning-cards" class="stat-value">0</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">In ripasso:</span>
+                <span id="review-cards" class="stat-value">0</span>
+              </div>
+            </div>
+          </div>
+          <div class="summary-card">
+            <h3>Da ripassare oggi</h3>
+            <div id="due-today" class="due-today">
+              <p class="no-cards-message">Nessuna flashcard da ripassare oggi</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="areas-progress">
+          <h3>Progresso per Area</h3>
+          <div id="areas-progress-container" class="progress-grid"></div>
+        </div>
+
+        <div class="action-buttons">
+          <button id="start-study-btn" class="btn btn--primary">
+            <i class="fas fa-play"></i> Inizia Studio
+          </button>
+          <button id="view-stats-btn" class="btn btn--secondary">
+            <i class="fas fa-chart-bar"></i> Statistiche Dettagliate
+          </button>
+        </div>
+
+        <div class="progress-chart-container">
+          <h3>Andamento nel Tempo</h3>
+          <div class="chart-wrapper">
+            <canvas id="progress-chart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    <footer class="app-footer">
+      <p>App creata da Marco Serafini | <a href="https://www.marcoserafini.xyz" target="_blank">marcoserafini.xyz</a></p>
+    </footer>
+  </section>
+
+  <!-- Admin Dashboard -->
+  <section id="admin-dashboard" class="screen">
+    <div class="dashboard-container">
+      <header class="app-header">
+        <div class="user-info">
+          <i class="fas fa-user-circle"></i>
+          <span id="admin-welcome">Benvenuto, Admin</span>
+        </div>
+        <div class="header-actions">
+          <button id="admin-toggle-theme-btn" class="btn btn--secondary btn--sm">
+            <i class="fas fa-moon"></i>
+          </button>
+          <button id="admin-logout-btn" class="btn btn--outline btn--sm">
+            <i class="fas fa-sign-out-alt"></i> Logout
+          </button>
+        </div>
+      </header>
+
+      <div class="dashboard-content">
+        <h2>Dashboard Admin - RMP Course 25-01</h2>
+        
+        <div class="class-overview">
+          <h3>Panoramica Classe</h3>
+          <div class="overview-cards">
+            <div class="overview-card">
+              <h4>Completamento Medio</h4>
+              <div class="overview-stat">
+                <span id="avg-completion" class="big-stat">0%</span>
+              </div>
+            </div>
+            <div class="overview-card">
+              <h4>Flashcard Totali Studiate</h4>
+              <div class="overview-stat">
+                <span id="total-cards-studied" class="big-stat">0</span>
+              </div>
+            </div>
+            <div class="overview-card">
+              <h4>Aree Problematiche</h4>
+              <div class="overview-stat">
+                <span id="problem-areas" class="area-list">Nessuna</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="students-comparison">
+          <h3>Confronto Studenti</h3>
+          <div class="chart-wrapper">
+            <canvas id="students-comparison-chart"></canvas>
+          </div>
+        </div>
+
+        <div class="student-details">
+          <h3>Dettagli Studenti</h3>
+          <div class="student-cards" id="student-cards-container"></div>
+        </div>
+
+        <div class="insights-section">
+          <h3>Insights Didattici</h3>
+          <div class="insights-cards">
+            <div class="insight-card">
+              <h4>Aree Problematiche</h4>
+              <p id="problem-areas-insights">Gli studenti stanno avendo difficoltà con...</p>
+            </div>
+            <div class="insight-card">
+              <h4>Trend di Apprendimento</h4>
+              <p id="learning-trends">La velocità di apprendimento è...</p>
+            </div>
+            <div class="insight-card">
+              <h4>Suggerimenti</h4>
+              <p id="suggestions">Si consiglia di focalizzarsi su...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <footer class="app-footer">
+      <p>App creata da Marco Serafini | <a href="https://www.marcoserafini.xyz" target="_blank">marcoserafini.xyz</a></p>
+    </footer>
+  </section>
+
+  <!-- Area Selection Screen -->
+  <section id="area-selection" class="screen">
+    <div class="container">
+      <header class="app-header">
+        <div class="user-info">
+          <i class="fas fa-user-circle"></i>
+          <span id="area-selection-welcome">Benvenuto, </span>
+        </div>
+        <div class="header-actions">
+          <button id="area-selection-back-btn" class="btn btn--outline btn--sm">
+            <i class="fas fa-arrow-left"></i> Dashboard
+          </button>
+        </div>
+      </header>
+
+      <div class="selection-content">
+        <h2>Seleziona Aree di Studio</h2>
+        <p class="selection-intro">Seleziona una o più aree su cui vuoi concentrare il tuo studio:</p>
+        
+        <div class="areas-grid" id="areas-grid"></div>
+        
+        <div class="selection-actions">
+          <button id="select-all-btn" class="btn btn--secondary">
+            <i class="fas fa-check-double"></i> Seleziona Tutto
+          </button>
+          <button id="deselect-all-btn" class="btn btn--secondary">
+            <i class="fas fa-times"></i> Deseleziona Tutto
+          </button>
+          <button id="start-selected-btn" class="btn btn--primary">
+            <i class="fas fa-play"></i> Inizia Studio
+          </button>
+        </div>
+      </div>
+    </div>
+    <footer class="app-footer">
+      <p>App creata da Marco Serafini | <a href="https://www.marcoserafini.xyz" target="_blank">marcoserafini.xyz</a></p>
+    </footer>
+  </section>
+
+  <!-- Study Screen -->
+  <section id="study-screen" class="screen">
+    <div class="container">
+      <header class="app-header">
+        <div class="study-info">
+          <span id="current-area">Area: </span>
+          <span id="cards-progress">Carta 0 di 0</span>
+        </div>
+        <div class="header-actions">
+          <button id="study-end-btn" class="btn btn--outline btn--sm">
+            <i class="fas fa-times"></i> Termina Sessione
+          </button>
+        </div>
+      </header>
+
+      <div class="study-content">
+        <div class="timer-container">
+          <span id="study-timer">00:00:00</span>
+        </div>
+        
+        <div class="flashcard-container">
+          <div class="flashcard" id="current-flashcard">
+            <div class="flashcard__front">
+              <div class="flashcard__content">
+                <p id="question-text">Domanda</p>
+              </div>
+            </div>
+            <div class="flashcard__back">
+              <div class="flashcard__content">
+                <p id="answer-text">Risposta</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flashcard-actions">
+          <button id="flip-btn" class="btn btn--primary">
+            <i class="fas fa-sync-alt"></i> Mostra Risposta
+          </button>
+        </div>
+
+        <div class="rating-buttons hidden" id="rating-buttons">
+          <button class="btn rating-btn" data-rating="again">
+            <span class="rating-label">Di nuovo</span>
+            <span class="rating-interval">10 min</span>
+          </button>
+          <button class="btn rating-btn" data-rating="hard">
+            <span class="rating-label">Difficile</span>
+            <span class="rating-interval">1 giorno</span>
+          </button>
+          <button class="btn rating-btn" data-rating="good">
+            <span class="rating-label">Buono</span>
+            <span class="rating-interval">3 giorni</span>
+          </button>
+          <button class="btn rating-btn" data-rating="easy">
+            <span class="rating-label">Facile</span>
+            <span class="rating-interval">7 giorni</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <footer class="app-footer">
+      <p>App creata da Marco Serafini | <a href="https://www.marcoserafini.xyz" target="_blank">marcoserafini.xyz</a></p>
+    </footer>
+  </section>
+
+  <!-- Statistics Modal -->
+  <div id="stats-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Statistiche Dettagliate</h2>
+        <button id="close-stats-modal" class="close-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="stats-container">
+          <div class="stats-section">
+            <h3>Riepilogo Generale</h3>
+            <div class="stats-grid">
+              <div class="stat-box">
+                <h4>Totale Flashcard</h4>
+                <p id="modal-total-cards">0</p>
+              </div>
+              <div class="stat-box">
+                <h4>Flashcard Studiate</h4>
+                <p id="modal-studied-cards">0</p>
+              </div>
+              <div class="stat-box">
+                <h4>Sessioni Completate</h4>
+                <p id="modal-sessions">0</p>
+              </div>
+              <div class="stat-box">
+                <h4>Tempo Totale</h4>
+                <p id="modal-total-time">0h 0m</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="stats-section">
+            <h3>Dettaglio per Area</h3>
+            <div id="modal-area-stats" class="area-stats-container"></div>
+          </div>
+          
+          <div class="stats-section">
+            <h3>Esportazione</h3>
+            <button id="export-stats-btn" class="btn btn--secondary">
+              <i class="fas fa-download"></i> Esporta dati (CSV)
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
